@@ -15,7 +15,7 @@ import subprocess
 import socket
 import platform
 import signal
-from basher import Basher
+from .basher import Basher
 from zeroconf import ServiceBrowser, Zeroconf, ServiceInfo
 
 class mDNSListener:
