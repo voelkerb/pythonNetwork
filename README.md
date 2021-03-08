@@ -86,5 +86,5 @@ The result is a list of tuples, with the mDNS name of the devices and their reso
 ```
 
 Or announce you own service at e.g. IP ```192.168.0.13``` and port ```2000``` the following way:
-```pythonb
+```python
 mdns.announce("my_mDNS_name", "my_service_name", "my_service_type", "192.168.0.13", 2000)
