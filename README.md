@@ -3,7 +3,7 @@
 Easy TCP client and server modules for python.
 
 
-## TCP Server
+# TCP Server
 
 Create a TCP server instance at ```localhost``` port ```2000``` using:
 ```python
@@ -35,7 +35,7 @@ python3 TCPServer.py --ip "0.0.0.0" --port 2000
 ```
 
 
-## TCP Client
+# TCP Client
 
 Create a TCP client instance and connect to a server at ```192.168.0.13``` port ```2000``` using:
 ```python
@@ -63,7 +63,7 @@ python3 TCPClient.py --ip "192.168.0.13" --port 2000
 ```
 
 
-## mDNS
+# mDNS
 
 Start by creating an mDNS Instance
 ```python
