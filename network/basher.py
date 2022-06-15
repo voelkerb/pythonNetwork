@@ -50,7 +50,11 @@ class Basher():
         :return: List of output lines. 
         :rtype:  list(str)
         """
-        self.__process = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setsid)
+        if sys.platform != 'win32':
+            self.__process = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setsid)
+        else:
+            self.__process = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
         self.__thread = threading.Thread(target=self.__output_reader)
         self.__thread2 = threading.Thread(target=self.__error_reader)
         self.__thread.daemon = True

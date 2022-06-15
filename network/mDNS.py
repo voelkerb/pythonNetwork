@@ -51,7 +51,8 @@ class mDNS():
         #: | default: None
         #: | Service names of hosted services. Add with :func:`announce <network.mDNS.mDNS.announce>`
         self.services = []
-        self._zeroconf = Zeroconf()
+        if sys.platform != 'win32':
+            self._zeroconf = Zeroconf()
         pass
 
     def pingResolve(self, ip, verbose=False, waittime=1.0):
@@ -70,17 +71,26 @@ class mDNS():
         """
         if waittime == -1:
             waittime = self.STANDARD_PING_WAITTIME
+
         command = "ping -c 2 -t 2 -i " + str(waittime)   + " " + str(ip)
+        if sys.platform == "win32": command = "ping -n 3 " + str(ip)
+
         basher = Basher(command, waittime=waittime, echo=verbose)
         output = basher.run(wait=False)
         while time.time()-basher.startTime < waittime and len(output) < 2:
             time.sleep(0.01)
         basher.stop()
         if len(output) < 2: return False, ip
-        for out in output[1:]:
-            if " bytes from " in out:
-                rip = out.split(" bytes from ")[-1].split(" ")[0].rstrip(":")
-                return True, rip
+        if sys.platform == "win32":
+            for out in output[1:]:
+                if "Reply from " in out:
+                    rip = out.split("Reply from ")[-1].split(":")[0]
+                    return True, rip
+        else:
+            for out in output[1:]:
+                if " bytes from " in out:
+                    rip = out.split(" bytes from ")[-1].split(" ")[0].rstrip(":")
+                    return True, rip
         return False, ip
 
     def ping(self, ip, verbose=False, waittime=1.0):
@@ -247,9 +257,11 @@ class mDNS():
         """
         if len(instances) == 0: return []
         results = []
+        cmdName = "ping -n 2 -w "
+        if sys.platform != "win32": cmdName = "ping -c 2 -t 2 -i "
         if waittime == -1:
             waittime = self.STANDARD_PING_WAITTIME
-        bashers = [Basher("ping -c 2 -t 2 -i " + str(waittime) + " " + str(instance), waittime=waittime, echo=verbose) for instance in instances] 
+        bashers = [Basher(cmdName + str(waittime) + " " + str(instance), waittime=waittime, echo=verbose) for instance in instances] 
         for basher in bashers:
             basher.run(wait=False)
         start = time.time()
@@ -423,14 +435,14 @@ class mDNS():
                            socket.inet_aton(address), port, 0, 0,
                            desc, hostName + ".local.")
         self.services.append(info)
-        self._zeroconf.register_service(info)
+        if self._zeroconf: self._zeroconf.register_service(info)
 
     def __del__(self):
         """On delete, the system should unregister registered mDNS entries"""
         for service in self.services:
             # print("Unregistering...")
             # print(service)
-            self._zeroconf.unregister_service(service)
+            if self._zeroconf: self._zeroconf.unregister_service(service)
 
 
 def initParser():
