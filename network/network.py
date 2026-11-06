@@ -294,9 +294,9 @@ class NetworkServer():
     @staticmethod
     def getInstance(port=2000, ip='127.0.0.1', requestHandler=None, logger=print):
         """ Static access method. """
-        if SingletonNetwork.__instance == None:
+        if NetworkServer.__instance == None:
             NetworkServer(port=port, ip=ip, requestHandler=requestHandler, singleton=True, logger=logger)
-        return SingletonNetwork.__instance
+        return NetworkServer.__instance
 
     def __init__(self, port=2000, ip='127.0.0.1', requestHandler=None, singleton=False, logger=print):
         """
